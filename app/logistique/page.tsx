@@ -1,0 +1,148 @@
+"use client";
+import { useState } from "react";
+
+export default function Logistique() {
+  const [tab, setTab] = useState("commandes");
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#F3F4F6", fontFamily: "Arial, sans-serif" }}>
+
+      {/* Header */}
+      <div style={{
+        background: "linear-gradient(135deg, #064E3B, #10B981)",
+        padding: "20px 32px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 28 }}>🌍</span>
+          <h1 style={{ color: "white", margin: 0, fontSize: 22, fontWeight: 800 }}>
+            Valor Africa
+          </h1>
+        </div>
+        <span style={{ color: "white", fontSize: 14 }}>🚚 Agent Logistique (CRL)</span>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ padding: "24px 32px 0" }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
+          {[
+            { id: "commandes", label: "📦 Commandes" },
+            { id: "livraisons", label: "🚚 En livraison" },
+            { id: "stock", label: "📦 Stock" },
+            { id: "tarifs", label: "💰 Tarifs" },
+            { id: "performance", label: "📊 Performance" },
+          ].map((t) => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{
+              padding: "10px 20px",
+              borderRadius: 8,
+              border: "none",
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: 13,
+              background: tab === t.id ? "#10B981" : "white",
+              color: tab === t.id ? "white" : "#374151",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+            }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab: Commandes à affecter */}
+        {tab === "commandes" && (
+          <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+            <h2 style={{ margin: "0 0 20px", color: "#064E3B" }}>📦 Commandes à affecter</h2>
+            <div style={{ textAlign: "center", padding: "48px 0", color: "#9CA3AF" }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>📦</div>
+              <div>Aucune commande à affecter</div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: En livraison */}
+        {tab === "livraisons" && (
+          <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+            <h2 style={{ margin: "0 0 20px", color: "#064E3B" }}>🚚 Suivi livraisons</h2>
+            <div style={{ textAlign: "center", padding: "48px 0", color: "#9CA3AF" }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🚚</div>
+              <div>Aucune livraison en cours</div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Stock */}
+        {tab === "stock" && (
+          <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+            <h2 style={{ margin: "0 0 20px", color: "#064E3B" }}>📦 Stock disponible</h2>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#F9FAFB" }}>
+                  {["Produit", "Marché", "Stock dispo", "Réservé", "Statut"].map(h => (
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 13, color: "#6B7280", fontWeight: 600, borderBottom: "1px solid #E5E7EB" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colSpan={5} style={{ padding: "48px", textAlign: "center", color: "#9CA3AF" }}>
+                    Aucun produit en stock
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Tab: Tarifs */}
+        {tab === "tarifs" && (
+          <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+            <h2 style={{ margin: "0 0 20px", color: "#064E3B" }}>💰 Grille tarifaire</h2>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#F9FAFB" }}>
+                  {["Société", "Marché", "Ville", "Frais standard", "Frais retour", "Délai livraison", "Délai fonds"].map(h => (
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 13, color: "#6B7280", fontWeight: 600, borderBottom: "1px solid #E5E7EB" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colSpan={7} style={{ padding: "48px", textAlign: "center", color: "#9CA3AF" }}>
+                    Aucun tarif configuré
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Tab: Performance */}
+        {tab === "performance" && (
+          <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+            <h2 style={{ margin: "0 0 20px", color: "#064E3B" }}>📊 Ma Performance</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+              {[
+                { label: "Commandes reçues", value: "0", color: "#10B981" },
+                { label: "Livrées", value: "0", color: "#6366F1" },
+                { label: "Retours", value: "0", color: "#EF4444" },
+                { label: "Taux livraison", value: "0%", color: "#F59E0B" },
+              ].map(kpi => (
+                <div key={kpi.label} style={{
+                  background: "#F9FAFB",
+                  borderRadius: 12,
+                  padding: 20,
+                  borderLeft: `4px solid ${kpi.color}`
+                }}>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: kpi.color }}>{kpi.value}</div>
+                  <div style={{ fontSize: 13, color: "#6B7280", marginTop: 4 }}>{kpi.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
