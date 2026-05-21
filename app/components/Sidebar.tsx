@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 
 const menuItems = [
   { label: "Dashboard", icon: "📊", href: "/dashboard" },
