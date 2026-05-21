@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 
 export default function MediaBuyer() {
-  const [tab, setTab] = useState("leads");
-  const [leads, setLeads] = useState<any[]>([]);
+  const [tab, setTab] = useState("Leads");
+  const [Leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState({
@@ -20,7 +20,7 @@ export default function MediaBuyer() {
 
   const fetchLeads = async () => {
     const { data } = await supabase
-      .from("leads")
+      .from("Leads")
       .select("*")
       .order("created_at", { ascending: false });
     if (data) setLeads(data);
@@ -36,7 +36,7 @@ export default function MediaBuyer() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("leads").insert([{
+    const { data, error } = await supabase.from("Leads").insert([{
       nom_client: form.nom_client,
       telephone: form.telephone,
       produit: form.produit,
@@ -46,9 +46,9 @@ export default function MediaBuyer() {
       marche: form.marche,
       source: form.source,
       statut: "Nouveau",
-      media_buyer: "Media Buyer",
+      m_b: "Media Buyer",
     }]);
-    if (!error) {
+    if (!error) {console.log("Lead ajouté:", data);
       setSuccess("✅ Lead ajouté avec succès !");
       setForm({ nom_client: "", telephone: "", produit: "", quantite: "", prix: "", ville: "", marche: "DZ", source: "" });
       fetchLeads();
@@ -88,7 +88,7 @@ export default function MediaBuyer() {
       <div style={{ padding: "24px 32px 0" }}>
         <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
           {[
-            { id: "leads", label: `📋 Mes Leads (${leads.length})` },
+            { id: "Leads", label: `📋 Mes Leads (${Leads.length})` },
             { id: "upload", label: "➕ Nouveau Lead" },
           ].map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
@@ -101,10 +101,10 @@ export default function MediaBuyer() {
           ))}
         </div>
 
-        {tab === "leads" && (
+        {tab === "Leads" && (
           <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
             <h2 style={{ margin: "0 0 20px", color: "#1E3A5F" }}>📋 Mes Leads</h2>
-            {leads.length === 0 ? (
+            {Leads.length === 0 ? (
               <div style={{ textAlign: "center", padding: "48px 0", color: "#9CA3AF" }}>
                 <div style={{ fontSize: 48, marginBottom: 12 }}>📋</div>
                 <div>Aucun lead pour le moment</div>
@@ -120,7 +120,7 @@ export default function MediaBuyer() {
                   </tr>
                 </thead>
                 <tbody>
-                  {leads.map((lead, i) => (
+                  {Leads.map((lead, i) => (
                     <tr key={lead.id} style={{ background: i % 2 ? "#FAFAFA" : "white" }}>
                       <td style={{ padding: "12px 16px", fontWeight: 600, fontSize: 13 }}>{lead.nom_client}</td>
                       <td style={{ padding: "12px 16px", fontSize: 13 }}>{lead.telephone}</td>
