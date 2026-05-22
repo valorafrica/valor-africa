@@ -6,12 +6,13 @@ import Sidebar from "../components/Sidebar";
 export default function Livreur() {
   const [commandes, setCommandes] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
+  const [filter, setFilter] = useState("Assignée");
 
   const fetchCommandes = async () => {
     const { data } = await supabase
       .from("Leads")
       .select("*")
-      .eq("statut", "En livraison")
+      .in("statut", ["Assignée", "En route", "Absent", "Injoignable"])
       .order("created_at", { ascending: false });
     if (data) setCommandes(data);
   };
@@ -26,7 +27,8 @@ export default function Livreur() {
 
   const getStatutColor = (statut: string) => {
     const colors: any = {
-      "En livraison": "#8B5CF6",
+      "Assignée": "#3B82F6",
+      "En route": "#8B5CF6",
       "Livré": "#10B981",
       "Absent": "#F59E0B",
       "Refusé": "#EF4444",
@@ -35,6 +37,8 @@ export default function Livreur() {
     return colors[statut] || "#6B7280";
   };
 
+  const filtered = commandes.filter(l => filter === "Tous" ? true : l.statut === filter);
+
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#F0F4F8" }}>
       <Sidebar role="🚗 Livreur" />
@@ -42,7 +46,7 @@ export default function Livreur() {
       <div style={{ marginLeft: 240, flex: 1, padding: 32 }}>
         <div style={{ marginBottom: 24 }}>
           <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#1E3A5F" }}>Mes Livraisons</h1>
-          <p style={{ margin: "4px 0 0", color: "#6B7280", fontSize: 14 }}>Commandes assignées aujourd'hui</p>
+          <p style={{ margin: "4px 0 0", color: "#6B7280", fontSize: 14 }}>Commandes assignées</p>
         </div>
 
         {/* Alerte importante */}
@@ -55,13 +59,18 @@ export default function Livreur() {
         </div>
 
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
           {[
-            { label: "À livrer", value: commandes.length, color: "#8B5CF6" },
-            { label: "Livrées", value: 0, color: "#10B981" },
-            { label: "Problèmes", value: 0, color: "#EF4444" },
+            { label: "À traiter", value: commandes.filter(l => l.statut === "Assignée").length, color: "#3B82F6" },
+            { label: "En route", value: commandes.filter(l => l.statut === "En route").length, color: "#8B5CF6" },
+            { label: "Absent", value: commandes.filter(l => l.statut === "Absent").length, color: "#F59E0B" },
+            { label: "Injoignable", value: commandes.filter(l => l.statut === "Injoignable").length, color: "#6B7280" },
           ].map(s => (
-            <div key={s.label} style={{ background: "white", borderRadius: 12, padding: "16px 20px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", borderTop: `3px solid ${s.color}` }}>
+            <div key={s.label} onClick={() => setFilter(s.label === "À traiter" ? "Assignée" : s.label)} style={{
+              background: "white", borderRadius: 12, padding: "16px 20px",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.08)", borderTop: `3px solid ${s.color}`,
+              cursor: "pointer"
+            }}>
               <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
               <div style={{ fontSize: 13, color: "#6B7280", marginTop: 4 }}>{s.label}</div>
             </div>
@@ -71,29 +80,39 @@ export default function Livreur() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20 }}>
           {/* Liste commandes */}
           <div style={{ background: "white", borderRadius: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", overflow: "hidden" }}>
-            <div style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB" }}>
-              <h3 style={{ margin: 0, fontSize: 15, color: "#1E3A5F" }}>📦 Commandes du jour</h3>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB", display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["Tous", "Assignée", "En route", "Absent", "Injoignable"].map(f => (
+                <button key={f} onClick={() => setFilter(f)} style={{
+                  padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer",
+                  fontSize: 12, fontWeight: 600,
+                  background: filter === f ? "#1E3A5F" : "#F3F4F6",
+                  color: filter === f ? "white" : "#374151"
+                }}>{f} ({commandes.filter(l => f === "Tous" ? true : l.statut === f).length})</button>
+              ))}
             </div>
-            {commandes.length === 0 ? (
+
+            {filtered.length === 0 ? (
               <div style={{ textAlign: "center", padding: "48px 0", color: "#9CA3AF" }}>
                 <div style={{ fontSize: 48, marginBottom: 12 }}>🚗</div>
-                <div>Aucune commande assignée</div>
+                <div>Aucune commande dans cette catégorie</div>
               </div>
             ) : (
-              commandes.map((cmd, i) => (
+              filtered.map((cmd, i) => (
                 <div key={cmd.id} onClick={() => setSelected(cmd)} style={{
                   padding: "16px 20px",
                   borderBottom: "1px solid #F3F4F6",
                   cursor: "pointer",
-                  background: selected?.id === cmd.id ? "#F5F3FF" : i % 2 ? "#FAFAFA" : "white",
-                  borderLeft: selected?.id === cmd.id ? "3px solid #8B5CF6" : "3px solid transparent"
+                  background: selected?.id === cmd.id ? "#EFF6FF" : i % 2 ? "#FAFAFA" : "white",
+                  borderLeft: selected?.id === cmd.id ? "3px solid #3B82F6" : "3px solid transparent"
                 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div>
                       <div style={{ fontWeight: 700, fontSize: 14 }}>{cmd.nom_client}</div>
-                      <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>📍 {cmd.ville} · {cmd.marche}</div>
+                      <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>
+                        📍 {cmd.ville} · {cmd.marche}
+                      </div>
                       <div style={{ fontSize: 12, color: "#6366F1", marginTop: 4, fontWeight: 600 }}>
-                        {cmd.produit} × {cmd.quantite} — 💰 {cmd.prix}
+                        {cmd.produit} × {cmd.quantite} — 💰 {cmd.prix} 🔒
                       </div>
                     </div>
                     <span style={{
@@ -111,6 +130,7 @@ export default function Livreur() {
           {selected ? (
             <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", position: "sticky", top: 20, height: "fit-content" }}>
               <h3 style={{ margin: "0 0 16px", color: "#1E3A5F" }}>Commande #{selected.id}</h3>
+
               <div style={{ background: "#F9FAFB", borderRadius: 12, padding: 16, marginBottom: 16 }}>
                 <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 8 }}>{selected.nom_client}</div>
                 <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 12 }}>📍 {selected.ville}</div>
@@ -118,7 +138,8 @@ export default function Livreur() {
                   {[
                     ["Produit", selected.produit],
                     ["Quantité", selected.quantite],
-                    ["Prix", `${selected.prix} 🔒`],
+                    ["Prix 🔒", `${selected.prix}`],
+                    ["Marché", selected.marche],
                   ].map(([k, v]) => (
                     <div key={k}>
                       <div style={{ fontSize: 11, color: "#9CA3AF", fontWeight: 600 }}>{k}</div>
@@ -135,25 +156,50 @@ export default function Livreur() {
                 </a>
               </div>
 
+              {/* Note modification */}
+              <div style={{ background: "#FEF2F2", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 12, color: "#EF4444", fontWeight: 600 }}>
+                🔒 Prix et quantité non modifiables — Contacter l'agent via WhatsApp
+              </div>
+
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  { label: "✅ Livré", statut: "Livré", bg: "#ECFDF5", color: "#10B981" },
-                  { label: "⚠️ Absent", statut: "Absent", bg: "#FFFBEB", color: "#F59E0B" },
-                  { label: "❌ Refusé", statut: "Refusé", bg: "#FEF2F2", color: "#EF4444" },
-                  { label: "📵 Injoignable", statut: "Injoignable", bg: "#F9FAFB", color: "#6B7280" },
-                ].map(a => (
-                  <button key={a.statut} onClick={() => updateStatut(selected.id, a.statut)} style={{
-                    padding: "11px", background: a.bg, color: a.color,
-                    border: `1px solid ${a.color}40`, borderRadius: 10,
-                    fontWeight: 700, fontSize: 13, cursor: "pointer"
-                  }}>{a.label}</button>
-                ))}
+                {selected.statut === "Assignée" && (
+                  <button onClick={() => updateStatut(selected.id, "En route")} style={{
+                    padding: "11px", background: "#F5F3FF", color: "#8B5CF6",
+                    border: "1px solid #8B5CF640", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                  }}>
+                    🚗 Je pars en livraison
+                  </button>
+                )}
+                <button onClick={() => updateStatut(selected.id, "Livré")} style={{
+                  padding: "11px", background: "#ECFDF5", color: "#10B981",
+                  border: "1px solid #10B98140", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  ✅ Livré — Client a accepté
+                </button>
+                <button onClick={() => updateStatut(selected.id, "Absent")} style={{
+                  padding: "11px", background: "#FFFBEB", color: "#F59E0B",
+                  border: "1px solid #F59E0B40", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  ⚠️ Client absent
+                </button>
+                <button onClick={() => updateStatut(selected.id, "Refusé")} style={{
+                  padding: "11px", background: "#FEF2F2", color: "#EF4444",
+                  border: "1px solid #EF444440", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  ❌ Client a refusé
+                </button>
+                <button onClick={() => updateStatut(selected.id, "Injoignable")} style={{
+                  padding: "11px", background: "#F9FAFB", color: "#6B7280",
+                  border: "1px solid #6B728040", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  📵 Injoignable
+                </button>
               </div>
             </div>
           ) : (
             <div style={{ background: "white", borderRadius: 16, padding: 48, textAlign: "center", color: "#9CA3AF", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
               <div style={{ fontSize: 48, marginBottom: 12 }}>🚗</div>
-              <div>Sélectionne une commande</div>
+              <div>Sélectionne une commande pour la traiter</div>
             </div>
           )}
         </div>
@@ -163,11 +209,11 @@ export default function Livreur() {
           <h3 style={{ margin: "0 0 16px", color: "#1E3A5F" }}>📋 Guide des statuts</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
             {[
+              { statut: "🚗 En route", quand: "Tu pars vers le client", bg: "#F5F3FF", color: "#8B5CF6" },
               { statut: "✅ Livré", quand: "Client a accepté et payé", bg: "#ECFDF5", color: "#10B981" },
               { statut: "⚠️ Absent", quand: "Client pas chez lui", bg: "#FFFBEB", color: "#F59E0B" },
               { statut: "❌ Refusé", quand: "Client refuse la commande", bg: "#FEF2F2", color: "#EF4444" },
               { statut: "📵 Injoignable", quand: "Téléphone éteint", bg: "#F9FAFB", color: "#6B7280" },
-              { statut: "↩️ Retour", quand: "Après 3 tentatives", bg: "#FFF7ED", color: "#F97316" },
             ].map(s => (
               <div key={s.statut} style={{ background: s.bg, borderRadius: 10, padding: "12px 16px", borderLeft: `3px solid ${s.color}` }}>
                 <div style={{ fontWeight: 700, color: s.color, fontSize: 13 }}>{s.statut}</div>
