@@ -12,7 +12,7 @@ export default function Livreur() {
     const { data } = await supabase
       .from("Leads")
       .select("*")
-      .in("statut", ["Assignée", "En route", "Absent", "Injoignable"])
+      .in("statut", ["Assignée", "En cours", "Absent", "Injoignable"])
       .order("created_at", { ascending: false });
     if (data) setCommandes(data);
   };
@@ -28,7 +28,7 @@ export default function Livreur() {
   const getStatutColor = (statut: string) => {
     const colors: any = {
       "Assignée": "#3B82F6",
-      "En route": "#8B5CF6",
+      "En cours": "#8B5CF6",
       "Livré": "#10B981",
       "Absent": "#F59E0B",
       "Refusé": "#EF4444",
@@ -62,7 +62,7 @@ export default function Livreur() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
           {[
             { label: "À traiter", value: commandes.filter(l => l.statut === "Assignée").length, color: "#3B82F6" },
-            { label: "En route", value: commandes.filter(l => l.statut === "En route").length, color: "#8B5CF6" },
+            { label: "En cours", value: commandes.filter(l => l.statut === "En cours").length, color: "#8B5CF6" },
             { label: "Absent", value: commandes.filter(l => l.statut === "Absent").length, color: "#F59E0B" },
             { label: "Injoignable", value: commandes.filter(l => l.statut === "Injoignable").length, color: "#6B7280" },
           ].map(s => (
@@ -81,7 +81,7 @@ export default function Livreur() {
           {/* Liste commandes */}
           <div style={{ background: "white", borderRadius: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", overflow: "hidden" }}>
             <div style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB", display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {["Tous", "Assignée", "En route", "Absent", "Injoignable"].map(f => (
+              {["Tous", "Assignée", "En cours", "Absent", "Injoignable"].map(f => (
                 <button key={f} onClick={() => setFilter(f)} style={{
                   padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer",
                   fontSize: 12, fontWeight: 600,
@@ -163,11 +163,11 @@ export default function Livreur() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {selected.statut === "Assignée" && (
-                  <button onClick={() => updateStatut(selected.id, "En route")} style={{
+                  <button onClick={() => updateStatut(selected.id, "En cours")} style={{
                     padding: "11px", background: "#F5F3FF", color: "#8B5CF6",
                     border: "1px solid #8B5CF640", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
                   }}>
-                    🚗 Je pars en livraison
+                    🚗 En cours
                   </button>
                 )}
                 <button onClick={() => updateStatut(selected.id, "Livré")} style={{
