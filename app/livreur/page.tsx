@@ -110,7 +110,7 @@ function Livreur() {
                         📍 {cmd.ville} · {cmd.marche}
                       </div>
                       <div style={{ fontSize: 12, color: "#6366F1", marginTop: 4, fontWeight: 600 }}>
-                        {cmd.produit} × {cmd.quantite} — 💰 {cmd.prix} 🔒
+                        {cmd.produit} × {cmd.quantite} — 💰 {Math.round((cmd.prix_unitaire || 0) * (cmd.quantite || 1) * (1 - (cmd.remise || 0) / 100))} 🔒
                       </div>
                     </div>
                     <span style={{
@@ -135,7 +135,7 @@ function Livreur() {
                   {[
                     ["Produit", selected.produit],
                     ["Quantité", selected.quantite],
-                    ["Prix 🔒", `${selected.prix}`],
+                    ["Prix total 🔒", `${Math.round((selected.prix_unitaire || 0) * (selected.quantite || 1) * (1 - (selected.remise || 0) / 100))}`],
                     ["Marché", selected.marche],
                   ].map(([k, v]) => (
                     <div key={k}>
