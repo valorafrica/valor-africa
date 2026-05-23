@@ -9,6 +9,7 @@ const menuItems = [
   { label: "Livreurs", icon: "🚗", href: "/livreur" },
   { label: "Stock", icon: "📦", href: "/stock" },
   { label: "Comptable", icon: "💰", href: "/comptable" },
+  { label: "Équipe", icon: "👥", href: "/equipe" },
 ];
 
 export default function Sidebar({ role }: { role?: string }) {
