@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Sidebar from "../components/Sidebar";
+import withAuth from "../components/withAuth";
 
-export default function Logistique() {
+function Logistique() {
   const [commandes, setCommandes] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [filter, setFilter] = useState("Confirmé");
@@ -57,7 +58,6 @@ export default function Logistique() {
           <p style={{ margin: "4px 0 0", color: "#6B7280", fontSize: 14 }}>Gestion des livraisons et livreurs</p>
         </div>
 
-        {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16, marginBottom: 24 }}>
           {[
             { label: "Confirmés", value: commandes.filter(l => l.statut === "Confirmé").length, color: "#10B981" },
@@ -78,7 +78,6 @@ export default function Logistique() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20 }}>
-          {/* Liste commandes */}
           <div style={{ background: "white", borderRadius: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", overflow: "hidden" }}>
             <div style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB", display: "flex", gap: 8, flexWrap: "wrap" }}>
               {["Tous", "Confirmé", "Assignée", "En cours", "Livré", "Retour", "Absent"].map(f => (
@@ -131,7 +130,6 @@ export default function Logistique() {
             )}
           </div>
 
-          {/* Panneau détail */}
           {selected ? (
             <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", position: "sticky", top: 20, height: "fit-content" }}>
               <h3 style={{ margin: "0 0 16px", color: "#1E3A5F" }}>Commande #{selected.id}</h3>
@@ -157,7 +155,6 @@ export default function Logistique() {
                 </div>
               </div>
 
-              {/* Assigner livreur */}
               {(selected.statut === "Confirmé" || selected.statut === "Assignée") && (
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
@@ -186,11 +183,35 @@ export default function Logistique() {
                     ⏳ En attente que le livreur parte
                   </div>
                 )}
+                <button onClick={() => updateStatut(selected.id, "En cours")} style={{
+                  padding: "11px", background: "#F5F3FF", color: "#8B5CF6",
+                  border: "1px solid #8B5CF640", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  🔄 Mettre En cours
+                </button>
                 <button onClick={() => updateStatut(selected.id, "Livré")} style={{
                   padding: "11px", background: "#ECFDF5", color: "#10B981",
                   border: "1px solid #10B98140", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
                 }}>
                   ✅ Marquer comme livré
+                </button>
+                <button onClick={() => updateStatut(selected.id, "Absent")} style={{
+                  padding: "11px", background: "#FFFBEB", color: "#F59E0B",
+                  border: "1px solid #F59E0B40", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  ⚠️ Absent
+                </button>
+                <button onClick={() => updateStatut(selected.id, "Refusé")} style={{
+                  padding: "11px", background: "#FEF2F2", color: "#EF4444",
+                  border: "1px solid #EF444440", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  ❌ Refusé
+                </button>
+                <button onClick={() => updateStatut(selected.id, "Injoignable")} style={{
+                  padding: "11px", background: "#F9FAFB", color: "#6B7280",
+                  border: "1px solid #6B728040", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                }}>
+                  📵 Injoignable
                 </button>
                 <button onClick={() => updateStatut(selected.id, "Retour")} style={{
                   padding: "11px", background: "#FFF7ED", color: "#F97316",
@@ -202,30 +223,7 @@ export default function Logistique() {
                   padding: "11px", background: "#FEF2F2", color: "#EF4444",
                   border: "1px solid #EF444440", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
                 }}>
-                  <button onClick={() => updateStatut(selected.id, "En cours")} style={{
-  padding: "11px", background: "#F5F3FF", color: "#8B5CF6",
-  border: "1px solid #8B5CF640", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
-}}>
-  🔄 Mettre En cours
-</button>
-<button onClick={() => updateStatut(selected.id, "Absent")} style={{
-  padding: "11px", background: "#FFFBEB", color: "#F59E0B",
-  border: "1px solid #F59E0B40", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
-}}>
-  ⚠️ Absent
-</button>
-<button onClick={() => updateStatut(selected.id, "Refusé")} style={{
-  padding: "11px", background: "#FEF2F2", color: "#EF4444",
-  border: "1px solid #EF444440", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
-}}>
-  ❌ Refusé
-</button>
-<button onClick={() => updateStatut(selected.id, "Injoignable")} style={{
-  padding: "11px", background: "#F9FAFB", color: "#6B7280",
-  border: "1px solid #6B728040", borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer"
-}}>
-  📵 Injoignable
-</button>❌ Annuler
+                  🚫 Annuler
                 </button>
               </div>
             </div>
@@ -240,3 +238,5 @@ export default function Logistique() {
     </div>
   );
 }
+
+export default withAuth(Logistique, "crl");

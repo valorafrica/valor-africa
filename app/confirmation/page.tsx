@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Sidebar from "../components/Sidebar";
+import withAuth from "../components/withAuth";
 
-export default function Confirmation() {
+function Confirmation() {
   const [leads, setLeads] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [filter, setFilter] = useState("Nouveau");
@@ -39,13 +40,11 @@ export default function Confirmation() {
       <Sidebar role="📞 Agent CRC" />
 
       <div style={{ marginLeft: 240, flex: 1, padding: 32 }}>
-        {/* Header */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#1E3A5F" }}>Confirmation des leads</h1>
           <p style={{ margin: "4px 0 0", color: "#6B7280", fontSize: 14 }}>Traiter et confirmer les commandes</p>
         </div>
 
-        {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
           {[
             { label: "Nouveaux", value: leads.filter(l => l.statut === "Nouveau").length, color: "#3B82F6" },
@@ -62,9 +61,7 @@ export default function Confirmation() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20 }}>
-          {/* Liste leads */}
           <div style={{ background: "white", borderRadius: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", overflow: "hidden" }}>
-            {/* Filtres */}
             <div style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB", display: "flex", gap: 8 }}>
               {["Tous", "Nouveau", "En appel", "Confirmé", "Annulé"].map(f => (
                 <button key={f} onClick={() => setFilter(f)} style={{
@@ -107,7 +104,6 @@ export default function Confirmation() {
             )}
           </div>
 
-          {/* Panneau détail */}
           {selected ? (
             <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", position: "sticky", top: 20, height: "fit-content" }}>
               <h3 style={{ margin: "0 0 16px", color: "#1E3A5F" }}>Fiche Lead</h3>
@@ -156,3 +152,5 @@ export default function Confirmation() {
     </div>
   );
 }
+
+export default withAuth(Confirmation, "crc");

@@ -1,19 +1,50 @@
 "use client";
 import { useState } from "react";
 
-const menuItems = [
-  { label: "Dashboard", icon: "📊", href: "/dashboard" },
-  { label: "Leads", icon: "📋", href: "/media-buyer" },
-  { label: "Confirmation", icon: "📞", href: "/confirmation" },
-  { label: "Logistique", icon: "🚚", href: "/logistique" },
-  { label: "Livreurs", icon: "🚗", href: "/livreur" },
-  { label: "Stock", icon: "📦", href: "/stock" },
-  { label: "Comptable", icon: "💰", href: "/comptable" },
-  { label: "Équipe", icon: "👥", href: "/equipe" },
-];
+const menus: any = {
+  manager: [
+    { label: "Dashboard", icon: "📊", href: "/dashboard" },
+    { label: "Tous les leads", icon: "📋", href: "/media-buyer" },
+    { label: "Confirmation", icon: "📞", href: "/confirmation" },
+    { label: "Logistique", icon: "🚚", href: "/logistique" },
+    { label: "Livreurs", icon: "🚗", href: "/livreur" },
+    { label: "Stock", icon: "📦", href: "/stock" },
+    { label: "Comptable", icon: "💰", href: "/comptable" },
+    { label: "Équipe", icon: "👥", href: "/equipe" },
+  ],
+  media_buyer: [
+    { label: "Mes Leads", icon: "📋", href: "/media-buyer" },
+  ],
+  crc: [
+    { label: "Leads à confirmer", icon: "📞", href: "/confirmation" },
+  ],
+  crl: [
+    { label: "Logistique", icon: "🚚", href: "/logistique" },
+  ],
+  livreur: [
+    { label: "Mes Livraisons", icon: "🚗", href: "/livreur" },
+  ],
+  stock: [
+    { label: "Gestion Stock", icon: "📦", href: "/stock" },
+  ],
+  comptable: [
+    { label: "Comptabilité", icon: "💰", href: "/comptable" },
+  ],
+};
 
-export default function Sidebar({ role }: { role?: string }) {
+const roleLabels: any = {
+  manager: "👑 Manager",
+  media_buyer: "📊 Media Buyer",
+  crc: "📞 Agent Confirmation",
+  crl: "🚚 Agent Logistique",
+  livreur: "🚗 Livreur",
+  stock: "📦 Équipe Stock",
+  comptable: "💰 Comptable",
+};
+
+export default function Sidebar({ role }: { role: string }) {
   const [collapsed, setCollapsed] = useState(false);
+  const items = menus[role] || menus.manager;
 
   return (
     <div style={{
@@ -24,9 +55,7 @@ export default function Sidebar({ role }: { role?: string }) {
       flexDirection: "column",
       transition: "width 0.3s",
       position: "fixed",
-      left: 0,
-      top: 0,
-      bottom: 0,
+      left: 0, top: 0, bottom: 0,
       zIndex: 100,
       boxShadow: "2px 0 8px rgba(0,0,0,0.2)"
     }}>
@@ -51,7 +80,7 @@ export default function Sidebar({ role }: { role?: string }) {
       </div>
 
       {/* Role badge */}
-      {!collapsed && role && (
+      {!collapsed && (
         <div style={{
           margin: "12px 16px",
           padding: "8px 12px",
@@ -61,13 +90,13 @@ export default function Sidebar({ role }: { role?: string }) {
           fontSize: 12,
           fontWeight: 600
         }}>
-          {role}
+          {roleLabels[role] || role}
         </div>
       )}
 
       {/* Menu */}
       <nav style={{ flex: 1, padding: "8px 0" }}>
-        {menuItems.map((item) => {
+        {items.map((item: any) => {
           const isActive = typeof window !== "undefined" && window.location.pathname === item.href;
           return (
             <a key={item.href} href={item.href} style={{
@@ -90,15 +119,16 @@ export default function Sidebar({ role }: { role?: string }) {
         })}
       </nav>
 
-      {/* Footer */}
+      {/* Déconnexion */}
       {!collapsed && (
-        <div style={{
-          padding: "16px 20px",
-          borderTop: "1px solid rgba(255,255,255,0.1)",
-          color: "#A8C8E8",
-          fontSize: 11
-        }}>
-          © 2026 Valor Africa
+        <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <button onClick={() => { window.location.href = "/"; }} style={{
+            width: "100%", padding: "10px", background: "rgba(239,68,68,0.15)",
+            color: "#FCA5A5", border: "1px solid rgba(239,68,68,0.3)",
+            borderRadius: 8, cursor: "pointer", fontWeight: 600, fontSize: 13
+          }}>
+            🚪 Se déconnecter
+          </button>
         </div>
       )}
     </div>

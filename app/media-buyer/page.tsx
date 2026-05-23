@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Sidebar from "../components/Sidebar";
+import withAuth from "../components/withAuth";
 
-export default function MediaBuyer() {
+function MediaBuyer() {
   const [tab, setTab] = useState("leads");
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -300,3 +301,5 @@ export default function MediaBuyer() {
     </div>
   );
 }
+
+export default withAuth(MediaBuyer, "media_buyer");

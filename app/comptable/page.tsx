@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Sidebar from "../components/Sidebar";
+import withAuth from "../components/withAuth";
 
-export default function Comptable() {
+function Comptable() {
   const [livraisons, setLivraisons] = useState<any[]>([]);
   const [tab, setTab] = useState("rapport");
 
@@ -49,7 +50,6 @@ export default function Comptable() {
           </div>
         </div>
 
-        {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
           {[
             { label: "CA Total", value: totalCA, color: "#10B981", icon: "💰" },
@@ -139,3 +139,5 @@ export default function Comptable() {
     </div>
   );
 }
+
+export default withAuth(Comptable, "comptable");

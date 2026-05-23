@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Sidebar from "../components/Sidebar";
+import withAuth from "../components/withAuth";
 
-export default function Livreur() {
+function Livreur() {
   const [commandes, setCommandes] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [filter, setFilter] = useState("Assignée");
@@ -49,7 +50,6 @@ export default function Livreur() {
           <p style={{ margin: "4px 0 0", color: "#6B7280", fontSize: 14 }}>Commandes assignées</p>
         </div>
 
-        {/* Alerte importante */}
         <div style={{
           background: "#FEF2F2", border: "1px solid #EF4444",
           borderRadius: 12, padding: "14px 20px", marginBottom: 24,
@@ -58,7 +58,6 @@ export default function Livreur() {
           ⚠️ Pour toute modification de prix ou quantité → Contacter votre agent via WhatsApp
         </div>
 
-        {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
           {[
             { label: "À traiter", value: commandes.filter(l => l.statut === "Assignée").length, color: "#3B82F6" },
@@ -78,7 +77,6 @@ export default function Livreur() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20 }}>
-          {/* Liste commandes */}
           <div style={{ background: "white", borderRadius: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", overflow: "hidden" }}>
             <div style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB", display: "flex", gap: 8, flexWrap: "wrap" }}>
               {["Tous", "Assignée", "En cours", "Absent", "Injoignable"].map(f => (
@@ -126,7 +124,6 @@ export default function Livreur() {
             )}
           </div>
 
-          {/* Panneau détail */}
           {selected ? (
             <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", position: "sticky", top: 20, height: "fit-content" }}>
               <h3 style={{ margin: "0 0 16px", color: "#1E3A5F" }}>Commande #{selected.id}</h3>
@@ -156,7 +153,6 @@ export default function Livreur() {
                 </a>
               </div>
 
-              {/* Note modification */}
               <div style={{ background: "#FEF2F2", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 12, color: "#EF4444", fontWeight: 600 }}>
                 🔒 Prix et quantité non modifiables — Contacter l'agent via WhatsApp
               </div>
@@ -204,7 +200,6 @@ export default function Livreur() {
           )}
         </div>
 
-        {/* Guide statuts */}
         <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.08)", marginTop: 20 }}>
           <h3 style={{ margin: "0 0 16px", color: "#1E3A5F" }}>📋 Guide des statuts</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
@@ -226,3 +221,5 @@ export default function Livreur() {
     </div>
   );
 }
+
+export default withAuth(Livreur, "livreur");

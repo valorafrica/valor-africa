@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Sidebar from "../components/Sidebar";
+import withAuth from "../components/withAuth";
 
-export default function Dashboard() {
+function Dashboard() {
   const [leads, setLeads] = useState<any[]>([]);
   const [stocks, setStocks] = useState<any[]>([]);
 
@@ -40,7 +41,6 @@ export default function Dashboard() {
       <Sidebar role="👑 Manager" />
       <div style={{ marginLeft: 240, flex: 1, padding: 32 }}>
 
-        {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
           <div>
             <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#1E3A5F" }}>Tableau de bord</h1>
@@ -56,7 +56,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, marginBottom: 32 }}>
           {kpis.map((kpi) => (
             <div key={kpi.label} style={{
@@ -74,7 +73,6 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Par marché */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 32 }}>
           {marches.map((m) => {
             const mLeads = leads.filter(l => l.marche === m.code);
@@ -101,7 +99,6 @@ export default function Dashboard() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          {/* Derniers leads */}
           <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
             <h3 style={{ margin: "0 0 20px", fontSize: 16, color: "#1E3A5F" }}>📋 Derniers leads</h3>
             {leads.slice(0, 8).map((lead, i) => (
@@ -125,7 +122,6 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Alertes stock */}
           <div style={{ background: "white", borderRadius: 16, padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
             <h3 style={{ margin: "0 0 20px", fontSize: 16, color: "#1E3A5F" }}>⚠️ Alertes Stock</h3>
             {alertes.length === 0 ? (
@@ -133,7 +129,7 @@ export default function Dashboard() {
                 <div style={{ fontSize: 40, marginBottom: 8 }}>✅</div>
                 <div>Aucune alerte stock</div>
               </div>
-            ) : alertes.map((s, i) => {
+            ) : alertes.map((s) => {
               const dispo = s.stock_total - s.stock_reserve - s.stock_livre + s.stock_retour;
               const isRupture = dispo === 0;
               return (
@@ -156,3 +152,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default withAuth(Dashboard, "manager");

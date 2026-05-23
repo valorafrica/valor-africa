@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Sidebar from "../components/Sidebar";
+import withAuth from "../components/withAuth";
 
-export default function Stock() {
+function Stock() {
   const [stocks, setStocks] = useState<any[]>([]);
   const [tab, setTab] = useState("stock");
   const [form, setForm] = useState({ produit: "", marche: "DZ", stock_total: "", seuil_alerte: "", notes: "" });
@@ -156,7 +157,7 @@ export default function Stock() {
                 <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
                 <div>Aucune alerte stock</div>
               </div>
-            ) : alertes.map((s, i) => {
+            ) : alertes.map((s) => {
               const dispo = s.stock_total - s.stock_reserve - s.stock_livre + s.stock_retour;
               const isRupture = dispo === 0;
               return (
@@ -179,3 +180,5 @@ export default function Stock() {
     </div>
   );
 }
+
+export default withAuth(Stock, "stock");
